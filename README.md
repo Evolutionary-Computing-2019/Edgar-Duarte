@@ -48,7 +48,7 @@ En el resultado se advierte una posible convergencia pero todavía falta evaluar
 ![Figura1](images/Figure_1.png)
 
 ## Implementación
-  * [Algoritmo genético en Python para MAXCP](AG Objetos MAXCP.py)
+  * [Algoritmo genético en Python para MAXCP](https://github.com/Evolutionary-Computing-2019/Edgar-Duarte/blob/master/AG%20Objetos%20MAXCP.py)
 
 
 ```bash

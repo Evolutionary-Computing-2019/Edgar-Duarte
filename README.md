@@ -44,12 +44,14 @@ tmax=50 #Number of generations
 runs=1 #Number of runs
 
 En el resultado se advierte una posible convergencia pero todavía falta evaluar la calidad de la implementación (exploración):
+
 ![Figura1](images/Figure_1.png)
 
 ## Implementación
+  * [Algoritmo genético en Python para MAXCP](AG Objetos MAXCP.py)
 
-`Algoritmo genético en Python para MAXCP` link: ![AG Objetos MAXCP.py](AG Objetos MAXCP.py)
-  ```bash
+
+```bash
   pip3 install black  # only required the first time
   black .
   ```

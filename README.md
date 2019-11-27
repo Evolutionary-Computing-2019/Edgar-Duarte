@@ -24,9 +24,9 @@ xj = 1,0
 zi = 1,0
 - Operadores
 El operador de selección actúa sobre una población inicial a través de la estrategia de torneo.
-El cruce se diseño aplicando operadores independientes para los componentes de demanda y de oferta de los cromosomas (zi y xj). Así, una vez se decide realizar el cruce, el algoritmo implementa el cruce tanto para el componente de demanda como para el de oferta. 
+El cruce se diseñó aplicando operadores independientes para los componentes de demanda y de oferta de los cromosomas (zi y xj). Así, una vez se decide realizar el cruce, el algoritmo lo implementa tanto para el componente de demanda como para el de oferta. 
 El operador de mutación funciona de manera similar al de cruce. Se selecciona un cromosoma y se aplica el operador de manera independiente al componente de demanda y al de oferta. 
-Para la operación de reemplazo se actúa sobre dos poblaciones origen: padres que provienen de la selección e hijos que provienen del cruce y la mutación consecutivamente. El algoritmo selecciona un porcentaje de los mejores padres y un porcentaje de los hijos (aleatorio) y agrega estos individuos a la nueva población. Una cantidad restante es seleccionada aleatoriamente de la población inicial. 
+Para la operación de reemplazo se actúa sobre dos poblaciones origen: padres que provienen de la selección e hijos que provienen del cruce y la mutación consecutivamente. El algoritmo selecciona un porcentaje de los mejores padres y un porcentaje de los hijos (selección aleatoria) y agrega estos individuos a la nueva población. Una cantidad restante es seleccionada aleatoriamente de la población inicial. 
 
 ### Instancia
 El algoritmo se ejecuta sobre una `instancia de 88 ciudades` link: ![DataCities.xlsx](DataCities.xlsx) utilizada por Daskin en su libro sobre localización de instalaciones (Daskin, M. S. (Ed.). (2013). Network and Discrete Location: Models, Algorithms, and Applications, Second Edition. https://doi.org/10.1002/9781118537015). 

@@ -14,8 +14,8 @@ import time
   
 start = time.time() 
 
-coveringxy = pd.read_excel("DataCities.xlsx", sheet_name="Covering")
-df = pd.read_excel("DataCities.xlsx", sheet_name="DataCities")
+coveringxy = pd.read_excel("DataCities.xlsx", sheet_name="Covering") #Matrix of aij
+df = pd.read_excel("DataCities.xlsx", sheet_name="DataCities") #Matrix with longitude, latitude and demand for each node
 
 class Individual():
     def __init__(self,lengthzi,lengthxj,minval,maxval):
@@ -40,16 +40,16 @@ class Individual():
     def fitness(self): #Calculate fitness of an individual
          #f,i,cities=0,0,Cities(35)
          f,i=0,0
-         matrix_aij=coveringxy.iloc[:self.lengthzi,:self.lengthxj].to_numpy()
+         matrix_aij=coveringxy.iloc[:self.lengthzi,:self.lengthxj].to_numpy() #Matrix of aij
          while i <= (len(self.zi)-1):
-             aij=df.iloc[i][3]
+             hi=df.iloc[i][3] 
              zi=self.zi[i]
-             f=f+aij*zi #Cálculo de F.O.: suma de hi*zi
+             f=f+hi*zi #Cálculo de F.O.: suma de hi*zi
              aij_xj=sum(matrix_aij[i]*self.xj)
              if not zi <= aij_xj: #Restricción zi<=sum(aij_xj) para cada i
-                 f=f-(zi-aij_xj)*(aij*0.1) #Penalización por restricción
-             if not np.sum(self.xj)<=self.lengthxj:
-                 f=f-(np.sum(self.xj)-self.lengthxj)*(aij*0.1) #Penalización por restricción
+                 f=f-(zi-aij_xj)*(hi*0.01) #Penalización por restricción
+             if not np.sum(self.xj)<=self.lengthxj: #Restricción sum xj <= P
+                 f=f-(np.sum(self.xj)-self.lengthxj)*(hi*0.01) #Penalización por restricción
              i=i+1
          return f
 
@@ -115,7 +115,7 @@ class Population():
         fitness_newpop= np.array(self.fitnesspop()) # Matrix of i, fitness , chromosome(i)        
         for i in range (len(self.pop)):
             tournament=[]
-            tournament=random.choices(fitness_newpop, k=2)
+            tournament=random.choices(fitness_newpop, k=4)
             tournament=sorted(tournament, key = lambda x: x[0],reverse=sense) #Sorted orders in a descending way by default.
             temporal=np.array([tournament[0].astype(int)])
             parents_selected.pop[i].zi=np.array(temporal[0][1:self.lengthzi+1])
@@ -158,16 +158,6 @@ class Population():
             if probmutate>random.random():                
                 i=i.mutation()
         return self
-
-
-#a=Population(2,6,5,0,2)
-#b=a.popcrossover(0.9)
-#print (a)
-#print (b)
-#
-#
-##%%
-
 
     def replace(self,parents,children,porcparents,porcchildren): # Self plays as partents population
         pop_replaced= copy.deepcopy(self)
@@ -222,7 +212,6 @@ class Experiment():
         cube_sol=np.delete(cube_sol,0,0)
         self.cube_sol=cube_sol.transpose()
         return self.cube_sol,bestofruns,worstofruns #Matrix with FitBestR1 FitWorstR1 FitBestR2 FitWorstR2 and so on.
-        
 
     def stats_per_gen(self):
         stats_per_gen=np.zeros((1,4))
@@ -247,14 +236,15 @@ class Experiment():
         while t<=tmax:
             #Selection: Parents population is created from new_pop
 
-            children_new_pop=copy.deepcopy(new_pop)
-            parents_new_pop= copy.deepcopy(new_pop)
+            #children_new_pop=copy.deepcopy(new_pop)
+            parents_new_pop=copy.deepcopy(new_pop)
             parents_pop=parents_new_pop.selection()
 
-            children_new_pop=copy.deepcopy(new_pop)
+            #children_new_pop=copy.deepcopy(new_pop)
             
             # Variation: Children population is created from new_pop by crossover and mutation.
-            children_pop=children_new_pop.popcrossover(prob_cross)
+            children_pop=parents_pop.popcrossover(prob_cross)
+            #children_pop=children_new_pop.popcrossover(prob_cross)
             
             # Variation: Children population is mutated
             children_pop_mut=children_pop.popmutation(prob_mutate)
@@ -300,7 +290,8 @@ class Experiment():
             print ("texp",type(experiment[1]))
             np.set_printoptions(suppress=True)
             print ("Highest fitness and chromosome in experiment: \n",' '.join(map(str, experiment[1])))
-            
+            a=experiment[1][0]
+            print ("Percentage of covered nodes: \n",' ',sum(a[1:]/self.lengthzi))
             print ("Lowest fitness and chromosome in experiment: \n",' '.join(map(str, experiment[2])))
             print ('*' * 60)
             #*********************************
@@ -363,17 +354,17 @@ class Experiment():
 #Parameters definition
 size_pop=20 #Size of the population
 sense=True #True=maximization False=minimization
-lengthzi=20 #lengthzi of each chromosome
-lengthxj=5 #Number of possible locations
+lengthzi=88 #lengthzi of each chromosome
+lengthxj=6 #Number of possible locations
 prob_cross=0.7 #Crossing probability
 prob_mutate=0.2 #Mutation probability
-porc_parents=0.1 #Parents percentage for replacing
-porc_children=0.4 #Children percentage for replacing
-cover_distance=35
+porc_parents=0.5 #Parents percentage for replacing
+porc_children=0.3 #Children percentage for replacing
+cover_distance=410
 vmin=0
 vmax=2
-tmax=50 #Number of generations
-runs=1 #Number of runs
+tmax=30 #Number of generations
+runs=20 #Number of runs
 listofbestsolutions=np.empty(lengthzi+lengthxj+2)
 
 a=Experiment(size_pop, lengthzi, lengthxj, prob_cross, prob_mutate, \

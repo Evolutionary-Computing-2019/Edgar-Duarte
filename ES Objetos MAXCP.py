@@ -71,41 +71,26 @@ class Individual():
 
 
     def mutation (self): #Mutation of one individual
-        total_i=self.lengthyij//self.lengthxj
+        total_i=self.lengthyij//self.lengthxj # Number of rows for yij
         pos_mutate=int(random.randrange(0,len(self.xj)-1))
-        self.xj[pos_mutate]= 0 if self.xj[pos_mutate] else 1
-        matr_mutation=np.zeros((total_i,self.lengthxj))
+        self.xj[pos_mutate]= 0 if self.xj[pos_mutate] else 1 #Mutation of xj
+        matr_mutation=np.zeros((total_i,self.lengthxj)) 
         for i in range(total_i):
             for j in range(int(self.lengthxj)):
                 matr_mutation[i][j]=np.random.normal(0,self.sigmayij[i][j])
+                # A matrix ij of values to add is created
         indcopy = copy.deepcopy(self)
-        indcopy.yij=(self.yij+matr_mutation)
-#        print ("indcopybefor normal",indcopy.yij)
+        indcopy.yij=(self.yij+matr_mutation) #A new matrix is created
         x=0
-        #indcopy.yij= np.clip(indcopy.yij, a_min = 0, a_max = 1) #Limit values between [0,1]
         indcopy.yij=np.absolute(indcopy.yij) 
         for i in indcopy.yij: #Normalize matrix self.yij    
             indcopy.yij[x]=i/sum(i)
             x=x+1
-#        print ("indcopy after normal",indcopy.yij)
-#        
-##        
-#        print ("selfitnes",self.fitness())
-#        print ("indcopyfitness",indcopy.fitness())
-#        print ("yij",self.yij)
         if self.fitness()>indcopy.fitness():
             self.yij=indcopy.yij
-#        print ("nuevo",self.yij)
         return self
 
-#a=Individual(12,3,0,2)
-#print (a)
-#
-#
-#b=a.mutation()
-#print (b)
-#
-##%%
+
 
 class Population():
     def __init__(self,size,lengthyij,lengthxj,minval,maxval):
@@ -123,9 +108,7 @@ class Population():
         matrixfit=[]
         for i in (self.pop):
             fit=i.fitness()
-            #matrixfit.append([fit,np.array([i.yij]),np.array([i.xj]),np.array([i.sigmayij])])
             matrixfit.append([fit,i])
-        #npmatrixfit=np.array(matrixfit)
         return matrixfit #Matrix with the fitness value and chromosomes for a population
 
     def addsolution(self): #Construction of the solution matrix for one run
@@ -135,12 +118,7 @@ class Population():
             fitness_newpop2.append(i[0])
         bestindex=np.argmax(fitness_newpop2, axis=0)    
         worstindex=np.argmin(fitness_newpop2, axis=0)
-        #temporal=[fitness_newpop[bestindex]]+[fitness_newpop[worstindex]] 
         best_worst_chrom=fitness_newpop[bestindex]+fitness_newpop[worstindex]
-        
-        
-        #best_worst_chrom = [val for sublist in temporal for val in sublist] #Flats the list of lists in one simple list
-        #print ("bwc",best_worst_chrom)
         return best_worst_chrom #Vector with Maxfit, MaxChrom, Minfit and MinChrom.
     
     def popmutation(self,probmutate): #Mutation operator over a whole population
@@ -153,25 +131,15 @@ class Population():
         return children_mutated     
 
     def selection(self):
-        #fitnessnewpop=self.fitnesspop()
-        #print ("fitnesspop____________________")
-
-        #print (self.fitnesspop())
+        
         sorted_children=sorted(self.fitnesspop(), key = lambda x: x[0],reverse=False) 
-        #sorted_children=sorted_children[:self.size] #Select the best of population
-        #sorted_children=sorted_children[:][1] #Select the best of population
-        #self.pop=(np.array([Individual(lengthyij,lengthxj,minval,maxval)for x in range(self.size)]))
         new_matrix=np.zeros((1))
-        #new_matrix=np.array(self.pop.size)
         row=1
         for i in sorted_children:
-            #new_matrix.append(new_matrix, i[1:], axis = 0) 
             if (row <= self.size):
                 new_matrix=np.concatenate((new_matrix, i[1:]))
             row=row+1
-            #new_matrix.append(i[1:])
         new_matrix=np.delete(new_matrix,0)
-        #print ("newm1",new_matrix)
         self.pop=new_matrix
         return self
 
@@ -204,47 +172,7 @@ class Population():
                children_crossed.pop[i+1].xj=ind2_xj               
         return children_crossed
 
-#popul=Population(4,4,2,0,2)
-#print ("popul____________________")
-#print (popul)
-#print (type(popul))
-#
-#print ("crossover____________________")
-#a=popul.popcrossover(0.5)
-#print (a,type(a))
-#
-#print ("mutation____________________")
-#b=a.popmutation(0.5)
-#print (b,type(b))
-#
-#print ("selection____________________")
-#c=b.selection()
-#print (c,type(c))
-#
-#
-#
-#
-#
-#     
-##%%
 
-#    def replace(self,parents,children,porcparents,porcchildren): # Self plays as partents population
-#        pop_replaced= copy.deepcopy(self)
-#        size=len(self.pop)
-#        xpar=int(size*porcparents)
-#        xchi=int(size*porcchildren)
-#        temporal=parents.fitnesspop()
-#        temporal=sorted(temporal, key = lambda x: x[0],reverse=True) 
-#        for i in range(size):
-#            if i <= xpar:
-#                pop_replaced.pop[i].zi=temporal[i][1:self.lengthzi+1]
-#                pop_replaced.pop[i].xj=temporal[i][self.lengthzi+1:]
-#            elif (i<=xpar+xchi):
-#                pop_replaced.pop[i]=random.choice(children.pop)
-#            else:
-#                pop_replaced.pop[i]=random.choice(self.pop)
-#        random.shuffle(pop_replaced.pop)
-#        return pop_replaced
 
 class Experiment():
     def __init__(self,size_pop, lengthyij, lengthxj, prob_cross, prob_mutate, \
@@ -331,16 +259,7 @@ class Experiment():
                         #for every generation.
                         #best_worst_chrom has the info of fitness and chromosome for whole run.
 
-#a=Experiment(size_pop, lengthyij, lengthxj, prob_cross, prob_mutate, \
-#             porc_parents, porc_children, vmin, vmax,tmax,runs)
 
-#a=Experiment(4,4,2,0.5,0.5,0.5,0.5,0,2,5,1)
-#b=a.experiment_run()
-#
-#print (b[0])
-#print (b[1])
-#print (b[2])
-##%%
     def output (self):
             precision=9
             print ('*' * 60, "  DEFINITION OF THE EXPERIMENT  ".center(60, ' '), '*' * 60)
@@ -363,17 +282,10 @@ class Experiment():
             print ('*' * 60)
             experiment=(copy.deepcopy(self.experiment_run()))
             stats_per_gen=(copy.deepcopy(self.stats_per_gen()))
-            #print ("texp",type(experiment[1]))
             np.set_printoptions(suppress=True)
-            #print ("Highest fitness and chromosome in experiment: \n",' '.join(map(str, experiment[1][0])))
-            #highestfit=experiment[1]
-       
-            #lowestfit=experiment[2]
-            #print (lowestfit)
             
             print ("Highest fitness and chromosome in experiment: \n",' ',\
                    experiment[1][0][0],"\n",experiment[1][0][1])
-            #print ("Lowest fitness and chromosome in experiment: \n",' '.join(map(str, experiment[2])))
             
             print ("Lowest fitness and chromosome in experiment: \n",' ',\
                    experiment[2][0][2],"\n",experiment[2][0][3])
@@ -391,10 +303,8 @@ class Experiment():
             indexlist = [("Gen{}".format (i+1)) for i in range(len(self.cube_sol))]
             pd.set_option("display.precision", precision)
             data1=(pd.DataFrame(self.cube_sol,columns=columnlist,index=indexlist))
-            #np.set_printoptions(suppress=True)
             print (data1)
             
-            #data.to_excel("output.xlsx",sheet_name='Sheet_name_1')  
             #*********************************
             #Printing of the np_stats_per_gen matrix
             print ('*' * 60)
@@ -409,18 +319,12 @@ class Experiment():
             pd.set_option("display.precision", precision)
             data2=(pd.DataFrame(stats_per_gen,columns=columnlist,index=indexlist))
             print (data2)
-            #data2.to_excel("output.xlsx",sheet_name='Sheet_name_2')  
             print ('*' * 60)
         
-#            with pd.ExcelWriter('output.xlsx') as writer:  # doctest: +SKIP
-#                data1.to_excel(writer, sheet_name='npcublesol')
-#                data2.to_excel(writer, sheet_name='stats_per_gen')
-#            
             #*********************************
             #Print of the first chart
             x = np.arange(0, tmax)
             print (x)
-            #y1 = np_stats_per_gen[0][0:tmax] # Max value of each generation
             stats_transposed=stats_per_gen.transpose()
             #y2 = stats_transposed[0]# Max value of each generation
             #y3 = stats_transposed[2]# Max value of each generation
@@ -437,19 +341,19 @@ class Experiment():
             plt.show()
 
 #Parameters definition
-size_pop=20 #Size of the population
+size_pop=50 #Size of the population
 sense=True #True=maximization False=minimization
-lengthyij=528 #lengthyij of each chromosome
-lengthxj=6 #Number of possible locations
+lengthyij=176 #lengthyij of each chromosome
+lengthxj=2 #Number of possible locations
 prob_cross=0.7 #Crossing probability
 prob_mutate=0.2 #Mutation probability
-porc_parents=0.1 #Parents percentage for replacing
-porc_children=0.4 #Children percentage for replacing
+porc_parents=0.3 #Parents percentage for replacing
+porc_children=0.3 #Children percentage for replacing
 cover_distance=35
 vmin=0
 vmax=2
-tmax=30 #Number of generations
-runs=20 #Number of runs
+tmax=100 #Number of generations
+runs=5 #Number of runs
 listofbestsolutions=np.empty(lengthyij+lengthxj+2)
 
 a=Experiment(size_pop, lengthyij, lengthxj, prob_cross, prob_mutate, \
@@ -460,29 +364,3 @@ print (d)
 
 print("Time Consumed") 
 print("% s seconds" % (time.time() - start)) 
-
-#%%
-#a=Population(10,6,2,0,2)
-#for i in a.pop:
-#    print ("Population",i)
-#
-#c=a.selection()
-#for i in c.pop:
-#    print ("Parents",i,type(i))
-#
-#b=c.fitnesspop()
-#for i in b:
-#    print ("PopulationSelected",i)
-#
-#d=a.popcrossover(0.7)
-#for i in d.pop:
-#    print ("Crossed",i)
-#
-#e=d.popmutation(0.6)
-#for i in e.pop:
-#    print ("Mutated",i,type(i))
-#
-#f=a.replace(c,e,0.3,0.3)
-#for i in f.pop:
-#    print ("Replaced",i,type(i))
-#%%
